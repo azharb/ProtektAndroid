@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
+import org.bouncycastle.jcajce.provider.digest.SHA3;
 
 import java.io.UnsupportedEncodingException;
 import java.security.DigestException;
@@ -51,7 +52,15 @@ public class ProtektService extends AccessibilityService {
 
                     System.out.println("IsPassword? " + nodeInfo.isPassword());
                     String password = "password" + "google.com";
-
+                    SHA3.DigestSHA3 md = new SHA3.DigestSHA3(256); //same as DigestSHA3 md = new SHA3.Digest256();
+                    try {
+                        md.update(password.getBytes("UTF-8"));
+                        byte[] digest = md.digest();
+                        String hashed = org.bouncycastle.util.encoders.Hex.toHexString(digest);
+                        System.out.println(hashed);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
 
 
                     Toast toShow = Toast.makeText(this, "To do: show protekt dialog here", Toast.LENGTH_SHORT);
