@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeViewFocused"
+    android:accessibilityFlags="flagRequestEnhancedWebAccessibility"
+    android:accessibilityFeedbackType="feedbackAllMask"
+    android:notificationTimeout="100"
+    android:settingsActivity="com.example.android.apis.accessibility.TestBackActivity"
+    android:canRetrieveWindowContent="true">
+
+</accessibility-service>
