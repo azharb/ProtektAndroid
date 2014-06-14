@@ -22,7 +22,8 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Created by abandeali on 5/31/14.
  */
-public class ProtektService extends AccessibilityService {
+public class
+        ProtektService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
         final int eventType = accessibilityEvent.getEventType();
@@ -33,39 +34,14 @@ public class ProtektService extends AccessibilityService {
 
                 if (nodeInfo != null && nodeInfo.isPassword()) {
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Protekt");
-                    builder.setMessage("Let's hash your pash");
-                    builder.setPositiveButton("Hash", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            //Do something
-                            dialog.dismiss();
-                        }});
-                        builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                dialog.dismiss();
-                            }
-                        });
-                        AlertDialog alert = builder.create();
-                        alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-                        alert.show();
 
-                    System.out.println("IsPassword? " + nodeInfo.isPassword());
-                    String password = "password" + "google.com";
-                    SHA3.DigestSHA3 md = new SHA3.DigestSHA3(256); //same as DigestSHA3 md = new SHA3.Digest256();
-                    try {
-                        md.update(password.getBytes("UTF-8"));
-                        byte[] digest = md.digest();
-                        String hashed = org.bouncycastle.util.encoders.Hex.toHexString(digest);
-                        System.out.println(hashed);
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-
+                    EncryptDialog eDialog = new EncryptDialog(this, nodeInfo);
+                    eDialog.createDialog().show();
 
                     Toast toShow = Toast.makeText(this, "To do: show protekt dialog here", Toast.LENGTH_SHORT);
                     toShow.setGravity(Gravity.CENTER, 0, 0);
                     toShow.show();
+
                 }
                 break;
         }
