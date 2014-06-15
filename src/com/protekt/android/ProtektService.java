@@ -34,8 +34,7 @@ public class
 
                 if (nodeInfo != null && nodeInfo.isPassword()) {
 
-
-                    EncryptDialog eDialog = new EncryptDialog(this, nodeInfo);
+                    EncryptDialog eDialog = new EncryptDialog(this);
                     eDialog.createDialog().show();
 
                     Toast toShow = Toast.makeText(this, "To do: show protekt dialog here", Toast.LENGTH_SHORT);
