@@ -1,14 +1,20 @@
 package com.protekt.android;
 
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+import android.app.Dialog;
+import android.content.*;
 import android.text.Editable;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
 import java.io.UnsupportedEncodingException;
@@ -23,20 +29,22 @@ import java.math.BigInteger;
  * Class that is responsible for throwing the alert box
  * and encrypting given password
  */
-public class EncryptDialog {
+public class EncryptDialog extends AlertDialog {
 
     private final Context c;
     private String password;
     private String domain;
+    private AlertDialog alert;
 
     public EncryptDialog(Context c) {
+        super(c);
         this.c = c;
         this.domain = "";
         this.password = "";
     }
 
     public AlertDialog createDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(c);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(c);
         builder.setTitle("Protekt");
 
         LinearLayout linearView= new LinearLayout(c);
@@ -44,10 +52,35 @@ public class EncryptDialog {
 
         final EditText domainInput = new EditText(c);
         domainInput.setHint("Domain name e.g. google.com");
-        linearView.addView(domainInput);
 
         final EditText passInput = new EditText(c);
-        passInput.setHint("Domain name e.g. google.com");
+        passInput.setHint("Password");
+
+        /*domainInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if(i == keyEvent.KEYCODE_ENTER) {
+                    return passInput.requestFocus();
+                }
+                return false;
+            }
+        });*/
+        domainInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        domainInput.setImeActionLabel("Next", KeyEvent.KEYCODE_ENTER);
+
+        /*passInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if(i == keyEvent.KEYCODE_ENTER) {
+                    return alert.getButton(Dialog.BUTTON_POSITIVE).performClick();
+                }
+                return false;
+            }
+        });*/
+        domainInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        passInput.setImeActionLabel("Done", KeyEvent.KEYCODE_ENTER);
+
+        linearView.addView(domainInput);
         linearView.addView(passInput);
 
         builder.setView(linearView);
@@ -57,7 +90,11 @@ public class EncryptDialog {
                 //Do something
                 domain = domainInput.getText().toString();
                 password = passInput.getText().toString();
-                System.out.println(encryptNode());
+                String cipher = encryptNode();
+                Intent mIntent = new Intent();
+                mIntent.setAction("com.protekt.android.setPassword");
+                mIntent.putExtra("cipher", cipher);
+                c.sendBroadcast(mIntent);
                 dialog.dismiss();
             }});
         builder.setNegativeButton("Close", new DialogInterface.OnClickListener() {
@@ -65,10 +102,17 @@ public class EncryptDialog {
                 dialog.dismiss();
             }
         });
-        AlertDialog alert = builder.create();
+
+        alert = builder.create();
         alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alert.getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+
+        domainInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
         return alert;
     }
 
@@ -129,5 +173,4 @@ public class EncryptDialog {
         return newHash;
 
     }
-
 }
