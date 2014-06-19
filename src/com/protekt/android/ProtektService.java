@@ -35,7 +35,10 @@ public class ProtektService extends AccessibilityService {
             case AccessibilityEvent.TYPE_VIEW_FOCUSED:
                 AccessibilityNodeInfo nodeInfo = accessibilityEvent.getSource();
 
-                if (nodeInfo != null && nodeInfo.isPassword()) {
+                if (nodeInfo != null && nodeInfo.isPassword() && !accessibilityEvent.getPackageName().toString()
+                        .equalsIgnoreCase(this.getPackageName()) &&
+                        ((nodeInfo.getActions() & AccessibilityNodeInfo.ACTION_PASTE) ==
+                                 AccessibilityNodeInfo.ACTION_PASTE)) {
 
                     //inputData(this, "abc", nodeInfo);
 
@@ -85,9 +88,15 @@ public class ProtektService extends AccessibilityService {
         ClipData clip = ClipData.newPlainText("protektPass", data);
         clipboard.setPrimaryClip(clip);
 
-        Log.d("SENDING DATA", Boolean.toString(source.refresh()));
-        Log.d("SENDING DATA", Boolean.toString(source
-                .performAction(AccessibilityNodeInfo.ACTION_PASTE)));
+        int i = 0;
+        while (!source.performAction(AccessibilityNodeInfo.ACTION_PASTE))
+        {
+            Log.d("SENDING DATA", Boolean.toString(source.refresh()));
+            Log.d("SENDING DATA", "Failed");
+            if (i++ == 5) break;
+
+        }
+
         clip = ClipData.newPlainText("protektPass", lastClip);
         clipboard.setPrimaryClip(clip);
     }

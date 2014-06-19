@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.*;
 import android.text.Editable;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -50,23 +51,9 @@ public class EncryptDialog extends AlertDialog {
         LinearLayout linearView= new LinearLayout(c);
         linearView.setOrientation(LinearLayout.VERTICAL);
 
-        final EditText domainInput = new EditText(c);
-        domainInput.setHint("Domain name e.g. google.com");
-
         final EditText passInput = new EditText(c);
+        passInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         passInput.setHint("Password");
-
-        /*domainInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if(i == keyEvent.KEYCODE_ENTER) {
-                    return passInput.requestFocus();
-                }
-                return false;
-            }
-        });*/
-        domainInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        domainInput.setImeActionLabel("Next", KeyEvent.KEYCODE_ENTER);
 
         /*passInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -77,11 +64,26 @@ public class EncryptDialog extends AlertDialog {
                 return false;
             }
         });*/
-        domainInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        passInput.setImeActionLabel("Done", KeyEvent.KEYCODE_ENTER);
+        passInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        passInput.setImeActionLabel("Next", KeyEvent.KEYCODE_ENTER);
 
-        linearView.addView(domainInput);
+        final EditText domainInput = new EditText(c);
+        domainInput.setHint("Domain name e.g. google.com");
+
+        /*domainInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if(i == keyEvent.KEYCODE_ENTER) {
+                    return passInput.requestFocus();
+                }
+                return false;
+            }
+        });*/
+        domainInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        domainInput.setImeActionLabel("Done", KeyEvent.KEYCODE_ENTER);
+
         linearView.addView(passInput);
+        linearView.addView(domainInput);
 
         builder.setView(linearView);
 
@@ -109,7 +111,7 @@ public class EncryptDialog extends AlertDialog {
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
 
-        domainInput.requestFocus();
+        passInput.requestFocus();
         InputMethodManager imm = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
