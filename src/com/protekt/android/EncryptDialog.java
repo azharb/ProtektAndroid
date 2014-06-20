@@ -37,10 +37,10 @@ public class EncryptDialog extends AlertDialog {
     private String domain;
     private AlertDialog alert;
 
-    public EncryptDialog(Context c) {
+    public EncryptDialog(Context c, String domain) {
         super(c);
         this.c = c;
-        this.domain = "";
+        this.domain = domain;
         this.password = "";
     }
 
@@ -55,30 +55,14 @@ public class EncryptDialog extends AlertDialog {
         passInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         passInput.setHint("Password");
 
-        /*passInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if(i == keyEvent.KEYCODE_ENTER) {
-                    return alert.getButton(Dialog.BUTTON_POSITIVE).performClick();
-                }
-                return false;
-            }
-        });*/
         passInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
         passInput.setImeActionLabel("Next", KeyEvent.KEYCODE_ENTER);
 
         final EditText domainInput = new EditText(c);
         domainInput.setHint("Domain name e.g. google.com");
+        domainInput.setText(domain);
 
-        /*domainInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if(i == keyEvent.KEYCODE_ENTER) {
-                    return passInput.requestFocus();
-                }
-                return false;
-            }
-        });*/
+
         domainInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
         domainInput.setImeActionLabel("Done", KeyEvent.KEYCODE_ENTER);
 
@@ -107,13 +91,9 @@ public class EncryptDialog extends AlertDialog {
 
         alert = builder.create();
         alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        alert.getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
 
         passInput.requestFocus();
-        InputMethodManager imm = (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
         return alert;
     }

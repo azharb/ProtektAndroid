@@ -2,6 +2,7 @@ package com.protekt.android;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.*;
@@ -11,6 +12,7 @@ import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 
@@ -35,14 +37,9 @@ public class ProtektService extends AccessibilityService {
             case AccessibilityEvent.TYPE_VIEW_FOCUSED:
                 AccessibilityNodeInfo nodeInfo = accessibilityEvent.getSource();
 
-                if (nodeInfo != null && nodeInfo.isPassword() && !accessibilityEvent.getPackageName().toString()
-                        .equalsIgnoreCase(this.getPackageName()) &&
-                        ((nodeInfo.getActions() & AccessibilityNodeInfo.ACTION_PASTE) ==
-                                 AccessibilityNodeInfo.ACTION_PASTE)) {
+                if (doesNodeInfoQualify(nodeInfo, accessibilityEvent)) {
 
-                    //inputData(this, "abc", nodeInfo);
-
-                    EncryptDialog eDialog = new EncryptDialog(this);
+                    EncryptDialog eDialog = new EncryptDialog(this, findDomainName(accessibilityEvent));
                     eDialog.createDialog().show();
 
                     IntentFilter passwordIntent = new IntentFilter();
@@ -55,6 +52,23 @@ public class ProtektService extends AccessibilityService {
                 }
                 break;
         }
+    }
+
+    private String findDomainName(AccessibilityEvent accessibilityEvent) {
+        String packageName = accessibilityEvent.getPackageName().toString();
+        String[] packageNameParts = packageName.split("\\.");
+
+        if(packageNameParts.length>=2)
+            return packageNameParts[1]+"."+packageNameParts[0];
+        else
+            return "";
+    }
+
+    private boolean doesNodeInfoQualify(AccessibilityNodeInfo nodeInfo, AccessibilityEvent accessibilityEvent) {
+        return nodeInfo != null && nodeInfo.isPassword() && !accessibilityEvent.getPackageName().toString()
+                .equalsIgnoreCase(this.getPackageName()) &&
+                ((nodeInfo.getActions() & AccessibilityNodeInfo.ACTION_PASTE) ==
+                        AccessibilityNodeInfo.ACTION_PASTE);
     }
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
