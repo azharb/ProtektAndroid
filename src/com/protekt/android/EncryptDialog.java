@@ -6,6 +6,7 @@ import android.content.*;
 import android.text.Editable;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -91,7 +92,7 @@ public class EncryptDialog extends AlertDialog {
 
         alert = builder.create();
         alert.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-
+        alert.getWindow().setGravity(Gravity.TOP);
 
         passInput.requestFocus();
 
